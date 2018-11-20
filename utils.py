@@ -39,6 +39,7 @@ def setup():
     parser = argparse.ArgumentParser(description='Audio Segmentation')
     parser.add_argument('-bs', '--batch_size', type=int, default=2)
     parser.add_argument('-dd', '--data_dir', type=str, default='./data')
+    parser.add_argument('-lr', '--learning_rate', type=float, default=1e-3)
     parser.add_argument('-ld', '--log_dir', type=str, default='logdir')
     parser.add_argument('-me', '--max_epoch', type=int, default=100)
     parser.add_argument('-mo', '--mode', type=str, default='train')

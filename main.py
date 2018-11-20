@@ -77,7 +77,8 @@ if __name__ == '__main__':
     valid_sdr = read_log(args.log_file)
 
     if args.mode == 'train':
-        opt = tf.train.AdamOptimizer()
+        learning_rate = tf.placeholder(tf.float32, [])
+        opt = tf.train.AdamOptimizer(learning_rate=learning_rate)
         gradients = tf.gradients(train_model.loss, trainable_variables)
         update = opt.apply_gradients(
             zip(gradients, trainable_variables), global_step=global_step)
@@ -97,6 +98,9 @@ if __name__ == '__main__':
             sess.run(tf.global_variables_initializer())
 
         if args.mode == 'train':
+            lr = args.learning_rate
+            valid_scores = [-1] * 2
+
             for epoch in range(1, args.max_epoch + 1):
 
                 sess.run(train_dataloader.iterator.initializer)
@@ -106,12 +110,17 @@ if __name__ == '__main__':
                 while True:
                     try:
                         cur_loss, _, cur_global_step =\
-                            sess.run([train_model.loss, update, global_step])
+                            sess.run(
+                                fetches=[train_model.loss, update, global_step],
+                                feed_dict={learning_rate: lr}
+                            )
                         train_loss_sum += cur_loss * args.batch_size
                         train_iter_cnt += args.batch_size
                     except tf.errors.OutOfRangeError:
-                        logging.info('step = {} , train SDR = {:5f}'.format(
-                            cur_global_step, -train_loss_sum / train_iter_cnt))
+                        logging.info(
+                            'step = {} , train SDR = {:5f} , lr = {:5f}'.
+                            format(cur_global_step,
+                                   -train_loss_sum / train_iter_cnt, lr))
                         break
 
                 sess.run(valid_dataloader.iterator.initializer)
@@ -123,6 +132,11 @@ if __name__ == '__main__':
                         valid_iter_cnt += args.batch_size
                     except tf.errors.OutOfRangeError:
                         cur_sdr = -(valid_loss_sum / valid_iter_cnt)
+
+                        valid_scores.append(cur_sdr)
+                        if max(valid_scores[-3:]) < valid_sdr:
+                            lr /= 2
+
                         logging.info('validation SDR = {:5f}'.format(cur_sdr))
                         if cur_sdr > valid_sdr:
                             valid_sdr = cur_sdr
@@ -138,8 +152,8 @@ if __name__ == '__main__':
                 try:
                     cur_loss, outputs, single_audios, cur_global_step = sess.run(
                         fetches=[
-                            infer_model.loss, infer_model.outputs,
-                            infer_model.single_audios, global_step
+                            infer_model.loss, infer_model.outputs, infer_model.
+                            single_audios, global_step
                         ])
 
                     now_dir = args.log_dir + "/test/" + str(
