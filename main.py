@@ -21,14 +21,6 @@ if __name__ == '__main__':
         infer_dataloader = TasNetDataLoader("infer", args.data_dir,
                                             args.batch_size, args.sample_rate)
 
-    args.N = 10
-    args.L = 40
-    args.H = 6
-    args.B = 8
-    args.P = 3
-    args.X = 2
-    args.R = 2
-
     with tf.variable_scope("model") as scope:
         layers = {
             "conv1d_encoder":
