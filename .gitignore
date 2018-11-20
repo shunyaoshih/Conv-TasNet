@@ -1,0 +1,4 @@
+__pycache__/*
+logdir/*
+.python-version
+data/*
