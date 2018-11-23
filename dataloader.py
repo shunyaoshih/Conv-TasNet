@@ -60,7 +60,7 @@ class TasNetDataLoader():
                         'constant',
                         constant_values=(0, 0))
 
-                mix, s1, s2 = padding(mix), padding(s1), padding(s2)
+                # mix, s1, s2 = padding(mix), padding(s1), padding(s2)
 
                 def write(l, r):
                     example = tf.train.Example(
@@ -73,14 +73,14 @@ class TasNetDataLoader():
                     writer.write(example.SerializeToString())
 
                 now_length = mix.shape[-1]
-                if now_length < int(6.55 * self.sample_rate):
+                if now_length < int(4 * self.sample_rate):
                     continue
-                target_length = int(6.55 * self.sample_rate)
-                stride = 4 * self.sample_rate
+                target_length = int(4 * self.sample_rate)
+                stride = int(4 * self.sample_rate)
                 for i in range(0, now_length - target_length, stride):
                     write(i, i + target_length)
-                if now_length // target_length:
-                    write(now_length - target_length, now_length)
+                # if now_length // target_length:
+                #     write(now_length - target_length, now_length)
 
     def _decode(self, serialized_example):
         example = tf.parse_single_example(

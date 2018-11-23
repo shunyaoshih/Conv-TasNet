@@ -41,13 +41,14 @@ class TasNet:
         input_audio = audios[:, 0, :]
 
         self.single_audios = single_audios = tf.unstack(
-            audios[:, 1:, int(2.55 * 8000):], axis=1)
+            audios[:, 1:, :], axis=1)
 
         with tf.variable_scope("encoder"):
             # encoded_input: [batch_size, some len, N]
             encoded_input = self.layers["conv1d_encoder"](
                 inputs=tf.expand_dims(input_audio, -1))
-            self.encoded_len = (int(6.55 * 8000) - self.L) // (self.L // 2) + 1
+            self.encoded_len = (int(4 * 8000) - self.L) // (
+                self.L // 2) + 1
 
         with tf.variable_scope("bottleneck"):
             # norm_input: [batch_size, some len, N]
@@ -89,14 +90,11 @@ class TasNet:
             self.layers["1d_deconv"](sep_output)
             for sep_output in sep_output_list
         ]
-        outputs = [
+        self.outputs = outputs = [
             tf.contrib.signal.overlap_and_add(
                 signal=sep_output,
                 frame_step=self.L // 2,
             ) for sep_output in sep_output_list
-        ]
-        self.outputs = outputs = [
-            output[:, int(2.55 * 8000):] for output in outputs
         ]
 
         sdr1 = self._calc_sdr(outputs[0], single_audios[0]) + \
