@@ -1,0 +1,4 @@
+librosa==0.6.2
+tqdm==4.28.1
+tensorflow==1.9.0
+numpy==1.15.3
