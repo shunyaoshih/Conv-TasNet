@@ -1,7 +1,7 @@
 # Conv-TasNet
 
-Implementation of ''TasNet: Surpassing Ideal Time-Frequency Masking for Speech
-Separation''.
+Implementation of [''TasNet: Surpassing Ideal Time-Frequency Masking for Speech
+Separation''](https://arxiv.org/abs/1809.07454).
 
 The default setting I used:
 
