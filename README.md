@@ -22,7 +22,7 @@ $ pip install -r requirements.txt
 
 Put your training, validation, and testing data under `data/train`, `data/valid`,
 and `data/infer` respectively.
-The program will parse all `data/{train, valid, infer}/*.wav` non-recursively
+The program will parse all `data/{train, valid, infer}/{mix, s1, s2}/*.wav` non-recursively
 and please note that the default sample rate is `8000`.
 
 ## Usage
